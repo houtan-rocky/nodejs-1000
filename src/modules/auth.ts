@@ -1,4 +1,13 @@
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+
+export const comparePasswords = (password, hash) => {
+  return bcrypt.compare(password, hash);
+};
+
+export const hashPassword = (password) => {
+  return bcrypt.hash(password, 5);
+};
 
 export const createJWT = (user) => {
   const token = jwt.sign(
@@ -26,13 +35,13 @@ export const protect = (req, res, next) => {
   }
 
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = user
-    next()
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = user;
+    next();
   } catch (error) {
     console.error(error);
-    res.status(401)
-    res.json({message: 'not valid token'})
-    return
+    res.status(401);
+    res.json({ message: "not valid token" });
+    return;
   }
 };
