@@ -1,11 +1,30 @@
-import express from 'express'
+import express from "express";
+import router from "./router";
+import morgan from "morgan";
+import cors from 'cors'
 
-const app = express()
+const app = express();
 
-app.get('/', (req, res) => {
-	console.log('hello from express')
-	res.status(200)
-	res.json({ message: 'hello' })
-})
+const customLogger = (message) => (req, res, next) => {
+  console.log(`Hello from ${message}`);
+  next();
+};
 
-export default app
+
+app.use(cors())
+app.use(morgan("dev"));
+app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  req.some_thing = "doggy";
+  next();
+});
+app.use(customLogger("custom logger"));
+
+app.get("/", (req, res) => {
+  res.status(200).json({ message: req.some_thing });
+});
+
+app.use("/api", router);
+
+export default app;

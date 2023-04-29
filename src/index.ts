@@ -1,6 +1,5 @@
-import app from './server'
+import app from "./server";
 
-app.listen(3001),
-	() => {
-		console.log('hello on http://localhost:3000')
-	}
+app.listen(3001, () => {
+  console.log("im listening");
+});
