@@ -1,31 +1,31 @@
-import express from "express";
-import router from "./router";
-import morgan from "morgan";
+import express from 'express'
+import router from './router'
+import morgan from 'morgan'
 import cors from 'cors'
-import { protect } from "./modules/auth"
+import { protect } from './modules/auth'
+import { createNewUser, signin } from './handlers/user'
 
-const app = express();
-
-const customLogger = (message) => (req, res, next) => {
-  console.log(`Hello from ${message}`);
-  next();
-};
-
+const app = express()
 
 app.use(cors())
-app.use(morgan("dev"));
-app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 
-app.use((req, res, next) => {
-  req.some_thing = "doggy";
-  next();
-});
-app.use(customLogger("custom logger"));
+app.get('/', (req, res, next) => {
+  setTimeout(() => {
+    next(new Error('hello'))
+  },1)
+})
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: req.some_thing });
-});
+app.use('/api', protect, router)
 
-app.use("/api", protect, router );
+app.post('/user', createNewUser)
+app.post('/signin', signin)
 
-export default app;
+app.use((err, req, res, next) => {
+  console.log(err)
+  res.json({message: `had an error: ${err.message}`})
+})
+
+export default app
